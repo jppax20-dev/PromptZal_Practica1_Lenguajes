@@ -3,6 +3,8 @@
  */
 
 package com.cunoc.promptzal_analizadorlexico;
+import com.cunoc.promptzal_analizadorlexico.lexer.TipoToken;
+import com.cunoc.promptzal_analizadorlexico.lexer.Token; 
 
 /**
  *
