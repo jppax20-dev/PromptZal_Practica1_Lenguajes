@@ -7,43 +7,45 @@ import com.cunoc.promptzal_analizadorlexico.lexer.TipoToken;
 import com.cunoc.promptzal_analizadorlexico.lexer.Token;
 import com.cunoc.promptzal_analizadorlexico.lexer.Lexer;
 import com.cunoc.promptzal_analizadorlexico.reportes.ErrorLexico;
+//herramientas 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.List;
+import java.util.Scanner;
 
 /**
  *
  * @author jppax
  */
 public class PromptZAL_AnalizadorLexico {
-
-    public static void main(String[] args) {
-        // Prueba, con un error a proposito
-        String codigoPrueba =
-                "@modelo \"claude-sonnet-4-6\"\n" +
-                "@rol \"analista de datos\"\n" +
-                "// Agente que prepara el analisis\n" +
-                "AGENTE analista {\n" +
-                "  contexto = \"Eres un analista de datos experto\"\n" +
-                "  variable ventas = CARGAR(\"ventas.csv\")\n" +
-                "  PREGUNTAR \"Cuales son las 3 tendencias?\" SOBRE ventas -> tendencias\n" +
-                "  RESUMIR tendencias EN 100 palabras -> resumen\n" +
-                "}\n" +
-                "EJECUTAR analista\n" +
-                "EXPORTAR resumen #\n"; // el '#' al final es un error a proposito
- 
-        Lexer lexer = new Lexer(codigoPrueba);
-        lexer.analizar();
- 
-        System.out.println("=== TOKENS RECONOCIDOS ===");
-        for (Token t : lexer.getTokens()) {
-            System.out.println(t);
+    //busca la ruta del archivo desde el almacenamiento 
+    public static void main(String [] args ){
+        Scanner sc = new Scanner(System.in);
+        
+        System.out.print("Porfavor ingrese el archivo .pz para analizar");
+        String ruta = sc.nextLine().trim();
+        
+        String codigo = leerArchivo(ruta);
+        if(codigo == null) {
+            return; // mensaje de error de leer archivo
         }
- 
-        System.out.println("\n=== ERRORES LEXICOS ===");
-        if (lexer.getErrores().isEmpty()) {
-            System.out.println("No se encontraron errores.");
-        } else {
-            for (ErrorLexico e : lexer.getErrores()) {
-                System.out.println(e);
-            }
+        
+        Lexer lexer = new lexer(codigo);
+        lexer.analizar();
+        
+        list<Token> tokens = lexer.getTokens(); 
+        list<ErrorLexico> errores = Lexer.getEores();
+        
+        mostrarTablaConsola(tokens, errores);
+        
+        try {
+            GeneradorReporte generador = new GeneradorReporte();  
+            generador.generarReportetokesn (tokens, "Reporte_de_tokens.html");
+            generador.generarReporteErrores(errores, "Reporte_de_errores.html");
+            System.out.println("Reportes Generados: 1.Reporte_de_tokens.html y 2.Reporte_de_Errores.html");
+        } catch (IOException e ){ //manejo del error 
+            System.out.println("Error al generar los reportes HTML:" + e.getMessage());
         }
     }
-}
+} // final 
