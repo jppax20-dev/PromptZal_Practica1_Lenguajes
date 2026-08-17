@@ -13,6 +13,8 @@ import java.util.List;
  * @author jppax
  */
 public class GenerarReporte {
+    //Se usa append para crear las celdas individuales 
+    //pasaar tokens a una manera de visualisar en una web 
     public void generarReporteTokens(List<Token> tokens, String ruta) throws IOException {
         StringBuilder html = new StringBuilder();
         html.append("<!DOCTYPE html>\n<html lang=\"es\">\n<head>\n");
@@ -41,10 +43,8 @@ public class GenerarReporte {
         escribirArchivo(ruta, html.toString());
     }
  
-    /**
-     * Genera el reporte de errores lexicos en HTML: lexema/caracter,
-     * descripcion, fila y columna. Si no hay errores, lo indica explicitamente.
-     */
+    //genera una tabla de errores 
+     // Crea la descripcion, fila y columna. Si no hay errores, lo indica explicitamente.
     public void generarReporteErrores(List<ErrorLexico> errores, String ruta) throws IOException {
         StringBuilder html = new StringBuilder();
         html.append("<!DOCTYPE html>\n<html lang=\"es\">\n<head>\n");
@@ -52,7 +52,7 @@ public class GenerarReporte {
         html.append(estilosHTML());
         html.append("</head>\n<body>\n");
         html.append("<h1>Reporte de Errores Lexicos</h1>\n");
- 
+        //ver si la lista esta vacia 
         if (errores.isEmpty()) {
             html.append("<p class=\"sin-errores\">No se encontraron errores lexicos en el archivo analizado.</p>\n");
         } else {
@@ -60,7 +60,7 @@ public class GenerarReporte {
             html.append("<table>\n<tr>");
             html.append("<th>Lexema / Caracter</th><th>Descripcion del error</th><th>Fila</th><th>Columna</th>");
             html.append("</tr>\n");
- 
+            //recorre los errores uno por uno, va creando filas y columnas conforme avanza;
             for (ErrorLexico e : errores) {
                 html.append("<tr>");
                 html.append("<td>").append(escaparHTML(e.getLexema())).append("</td>");
@@ -77,12 +77,8 @@ public class GenerarReporte {
         escribirArchivo(ruta, html.toString());
     }
  
-    // ---------- Utilidades internas ----------
- 
-    /**
-     * Reemplaza caracteres especiales de HTML para que el contenido de los
-     * lexemas (comillas, simbolos, etc.) no rompa la estructura de la tabla.
-     */
+     //Reemplaza caracteres especiales de HTML para que el contenido de los
+      //lexemas (comillas, simbolos, etc.) no rompa la estructura de la tabla.
     private String escaparHTML(String texto) {
         if (texto == null) {
             return "";

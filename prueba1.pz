@@ -1,0 +1,21 @@
+/* 
+   Archivo de prueba completo para PromptZal
+   Práctica 1 - Analizador Léxico
+*/
+
+@modelo "gpt-4o"
+@rol "Asistente de Código"
+@formato "json"
+
+// Declaración de variables y datos iniciales
+variable limite_intentos = 5
+variable temperatura = 0.7
+variable mensaje_bienvenida = "Procesando solicitud de análisis..."
+
+/* Configuración del Agente principal
+   y definición de comandos de IA */
+AGENTE AsistenteCodigo {
+    PREGUNTAR("Analizar el siguiente archivo de código Java") -> responder
+    
+    variable total_procesado = limite_intentos + 10
+}
