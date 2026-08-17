@@ -26,6 +26,7 @@ public enum TipoToken {
     CONECTOR,
  
     // Identificadores definidos por el usuario (nombres de agentes y variables)
+    // Letra o guion bajo, seguido de letras, digitos o guion bajo
     IDENTIFICADOR,
  
     // Literal de cadena: texto entre comillas dobles

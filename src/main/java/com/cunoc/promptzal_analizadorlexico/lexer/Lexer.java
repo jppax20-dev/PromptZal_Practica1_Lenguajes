@@ -33,10 +33,7 @@ public class Lexer {
         this.errores = new ArrayList<>();
     }
  
-    /**
-     * Recorre todo el codigo 
-     * No se detiene ante un error: lo registra y continua hasta el final.
-     */
+    //Se recorre todo el codigo y no se detiene anete errores 
     public void analizar() {
         while (!esFinal()) {
             char c = actual();
@@ -100,10 +97,7 @@ public class Lexer {
         agregarToken(lexema, clasificarPalabra(lexema), filaInicio, colInicio);
     }
  
-    /**
-     * Decide el tipo de una palabra ya formada, comparando el lexema
-     * contra cada categoria del lenguaje mediante switch.
-     */
+    //Reconome el tipo de token y compara los lexemas con las categorias del lenguale con un switch
     private TipoToken clasificarPalabra(String lexema) {
         switch (lexema) {
             case "AGENTE", "contexto", "variable", "EJECUTAR", "EXPORTAR" -> {
@@ -136,7 +130,7 @@ public class Lexer {
             avanzar();
         }
  
-        // Parte decimal opcional: un punto seguido de al menos un digito
+        // Decimal un punto seguido de al menos un digito
         if (!esFinal() && actual() == '.' && siguiente() != '\0' && esDigito(siguiente())) {
             esDecimal = true;
             sb.append(actual());
@@ -150,17 +144,14 @@ public class Lexer {
         String lexema = sb.toString();
         agregarToken(lexema, esDecimal ? TipoToken.DECIMAL : TipoToken.ENTERO, filaInicio, colInicio);
     }
- 
-    /**
-     * Reconoce una cadena entre comillas dobles. Las comillas de apertura
-     * y cierre se registran como tokens DELIMITADOR independientes, y el
-     * contenido entre ellas se registra como un token CADENA aparte.
-     */
+    
+    //donde se reconoce cadenas, con comillas cuando cierran se registrar como token delimitador 
+    //y el contenido entre las comillas se regristra como un token tipo cadena.
     private void leerCadena() {
         int filaApertura = fila;
         int colApertura = columna;
         agregarToken("\"", TipoToken.DELIMITADOR, filaApertura, colApertura);
-        avanzar(); // consumir la comilla de apertura
+        avanzar(); // comilla de inicio 
  
         int filaContenido = fila;
         int colContenido = columna;
@@ -174,7 +165,7 @@ public class Lexer {
         if (!esFinal() && actual() == '"') {
             agregarToken(sb.toString(), TipoToken.CADENA, filaContenido, colContenido);
             agregarToken("\"", TipoToken.DELIMITADOR, fila, columna);
-            avanzar(); // consumir la comilla de cierre
+            avanzar(); // comilla de final 
         } else {
             // Se llego al fin de linea o del archivo sin cerrar la cadena
             errores.add(new ErrorLexico("\"" + sb, "Cadena sin cerrar", filaApertura, colApertura));
