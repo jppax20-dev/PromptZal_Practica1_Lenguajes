@@ -8,6 +8,7 @@ import com.cunoc.promptzal_analizadorlexico.lexer.Token;
 import com.cunoc.promptzal_analizadorlexico.lexer.Lexer;
 import com.cunoc.promptzal_analizadorlexico.reportes.ErrorLexico;
 import com.cunoc.promptzal_analizadorlexico.reportes.GenerarReporte;
+import com.cunoc.promptzal_analizadorlexico.LectorArchivo;
 //herramientas 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -27,7 +28,7 @@ public class PromptZAL_AnalizadorLexico {
         System.out.print("Porfavor ingrese el archivo .pz para analizar");
         String ruta = sc.nextLine().trim();
         
-        String codigo = leerArchivo(ruta);
+        String codigo = LectorArchivo.leer(ruta);
         if(codigo == null) {
             return; // mensaje de error de leer archivo
         }
@@ -38,7 +39,7 @@ public class PromptZAL_AnalizadorLexico {
         List<Token> tokens = lexer.getTokens(); 
         List<ErrorLexico> errores = lexer.getErrores();
         
-        mostrarTablaConsola(tokens, errores);
+        MostrarConsola.mostrarTabla(tokens, errores);
         
         try {
             GenerarReporte generador = new GenerarReporte();
@@ -48,39 +49,5 @@ public class PromptZAL_AnalizadorLexico {
         } catch (IOException e ){ //manejo del error 
             System.out.println("Error al generar los reportes HTML:" + e.getMessage());
         }
-    }
-    //usando Filereader y Buffer reader lee el archivo, si no encuentra nada regresa null 
-    private static String leerArchivo ( String ruta){
-        StringBuilder sb = new StringBuilder();
-        
-        try(BufferedReader br = new BufferedReader (new FileReader(ruta))){
-            String linea;
-            while ((linea = br.readLine())!=null){
-                sb.append(linea).append("\n");
-            }
-            
-        } catch (IOException e){
-            System.out.println( "No se pudo leer el archivo " + e.getMessage());
-            return null; 
-        }
-        return sb.toString();
-            
-        }
-         //muestra de resultados como una tabla 
-         private static void mostrarTablaConsola (List<Token> tokens, List<ErrorLexico> errores){
-             System.out.println("=== TOKENS ===");
-             for (Token t : tokens){
-                 System.out.println(t);
-             }
-             System.out.println("=== ERRORES LEXICOS ===");
-             if (errores.isEmpty()){
-                 System.out.println("No se encontraron errores.");
-             } else {
-                 for (ErrorLexico e : errores){
-                     System.out.println(e);
-                 }
-             }
-             
-         }
-    
+    }   
 } // final 
