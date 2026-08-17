@@ -1,0 +1,9 @@
+@modelo "claude-haiku"
+
+AGENTE test_corto {
+    // 1. Cadena rota
+    variable x = "cadena
+    
+    // 2. Operador malo y numero raro
+    PREGUNTAR x = > 10.5.2
+}
