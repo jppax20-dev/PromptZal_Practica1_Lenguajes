@@ -12,7 +12,7 @@ import java.io.IOException;
  */
 //usando Filereader y Buffer reader lee el archivo, si no encuentra nada regresa null
 public class LectorArchivo {
-    //es el encargado de ller el archivo y guardarlo mientras tanto en la ram 
+    //es el encargado de leer el archivo y guardarlo mientras tanto en la ram 
     public static String leer(String ruta){
         StringBuilder sb = new StringBuilder();
                 

@@ -5,9 +5,30 @@
     <artifactId>PromptZAL_AnalizadorLexico</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
+    
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.release>21</maven.compiler.release>
+        <!-- Esta propiedad guarda la ruta de tu clase principal -->
         <exec.mainClass>com.cunoc.promptzal_analizadorlexico.PromptZAL_AnalizadorLexico</exec.mainClass>
     </properties>
+
+    <build>
+        <plugins>
+            <!-- Plugin encargado de empaquetar el .jar -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.3.0</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <!-- Le decimos a Maven que agregue la clase principal al Manifiesto -->
+                            <mainClass>${exec.mainClass}</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>

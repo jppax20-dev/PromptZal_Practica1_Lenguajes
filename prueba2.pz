@@ -1,0 +1,41 @@
+@modelo "claude-sonnet-4-6"
+@rol "analista de codigo"
+@formato "markdown"
+
+// Comentario de linea: Agente para revision de codigo
+/* =====================================
+   Bloque de analisis y resumen de codigo
+   ===================================== */
+
+AGENTE analizador {
+ contexto = "Eres un desarrollador experto en Java y patrones de diseno"
+ variable archivoFuente = CARGAR("Main.java")
+ 
+ GENERAR codigo DESDE "una funcion que ordene una lista con quicksort" -> solucion
+ ANALIZAR solucion SOBRE "complejidad algoritmica y casos borde" -> revision
+ RESUMIR revision EN 100 palabras -> informe
+}
+
+EJECUTAR analizador
+EXPORTAR solucion, informe
+
+/* 
+   ====================================================
+   SECCION DE ERRORES LEXICOS INTENCIONADOS
+   ====================================================
+   El lexer debe reportar los siguientes errores (fila y columna)
+   sin detener la ejecucion.
+*/
+
+// 1. Simbolos/Caracteres no reconocidos por la gramatica de PromptZal
+variable precio_dolar$ = 7.80;
+variable simbolo_raro = ~;
+variable simbolo_euro = €;
+variable comilla_invertida = `cadena con backticks`;
+
+// 2. Cadena sin cerrar (Error léxico de String)
+variable error_cadena = "Esta es una cadena que nunca se cierra;
+
+// 3. Mas lexemas validos al final para verificar que el lexer continua
+@formato "texto plano"
+EXPORTAR informe

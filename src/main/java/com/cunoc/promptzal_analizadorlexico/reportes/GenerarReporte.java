@@ -58,22 +58,26 @@ public class GenerarReporte {
         } else {
             html.append("<p>Total de errores encontrados: ").append(errores.size()).append("</p>\n");
             html.append("<table>\n<tr>");
-            html.append("<th>Lexema / Caracter</th><th>Descripcion del error</th><th>Fila</th><th>Columna</th>");
+            html.append("<th>No.</th><th>Lexema / Caracter</th><th>Descripcion del error</th><th>Fila</th><th>Columna</th>");
             html.append("</tr>\n");
+            int contadorErrores = 1;
             //recorre los errores uno por uno, va creando filas y columnas conforme avanza;
             for (ErrorLexico e : errores) {
-                html.append("<tr>");
+
+                html.append("<tr class=\"fila-error\">"); 
+                html.append("<td>").append(contadorErrores).append("</td>");
                 html.append("<td>").append(escaparHTML(e.getLexema())).append("</td>");
                 html.append("<td>").append(escaparHTML(e.getDescripcion())).append("</td>");
                 html.append("<td>").append(e.getFila()).append("</td>");
                 html.append("<td>").append(e.getColumna()).append("</td>");
                 html.append("</tr>\n");
+                contadorErrores++;
             }
             html.append("</table>\n");
         }
- 
+
         html.append("</body>\n</html>");
- 
+
         escribirArchivo(ruta, html.toString());
     }
  
@@ -99,6 +103,8 @@ public class GenerarReporte {
                 + "th { background-color: #1a3c6e; color: white; }\n"
                 + "tr:nth-child(even) { background-color: #f2f2f2; }\n"
                 + ".sin-errores { color: green; font-weight: bold; }\n"
+                // Aquí agregamos el estilo para los errores
+                + ".fila-error { color: #cc0000; background-color: #ffe6e6; }\n" 
                 + "</style>\n";
     }
  

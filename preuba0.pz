@@ -1,0 +1,33 @@
+@modelo "claude-3-opus"
+@rol "agente de pruebas"
+@formato "markdown"
+
+// 1. Prueba de caracteres que no pertenecen al alfabeto
+~ ^ \ ¿ ¡
+
+// 2. Falsa directiva (debe reportar error en el @ y leer directivaFalsa como identificador)
+@directivaFalsa 
+
+AGENTE evaluador {
+    contexto = "Validando la recuperacion de errores"
+    
+    // 3. Trampas con numeros (multiples puntos y letras adheridas)
+    variable pi_roto = 3.14.15.9
+    variable peso = 100kg
+    
+    // 4. Trampas con conectores (flechas mal formadas o invertidas)
+    GENERAR "reporte" DESDE peso = > resultado
+    RESUMIR resultado > - final
+    
+    // 5. Cadena sin terminar (rompe por el salto de linea)
+    variable error_string = "Esta cadena se rompe
+    variable normal = "El analizador debe leer esto correctamente"
+
+    // 6. Caracter arroba suelto en medio de un comando
+    PREGUNTAR "correo" SOBRE @usuario -> email
+}
+
+EJECUTAR evaluador
+EXPORTAR normal, email
+
+/* 7. Comentario de bloque que nunca se cierra para forzar error de fin de archivo (EOF)...

@@ -13,6 +13,7 @@ import java.util.List;
  *
  * @author jppax
  */
+//La clase mas importante 
 public class Lexer {
     private final String codigo;
     private int posicion;
@@ -173,7 +174,7 @@ public class Lexer {
         errores.add(new ErrorLexico(sb.toString(), "Cadena sin cerrar", filaApertura, colApertura));
     }
 }
- 
+    //lectura de errores
     private void leerSimboloOError() {
         int filaInicio = fila;
         int colInicio = columna;
