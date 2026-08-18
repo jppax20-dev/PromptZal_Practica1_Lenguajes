@@ -1,0 +1,14 @@
+@modelo "claude-sonnet-4-6"
+@rol "analista de datos"
+
+AGENTE analista {
+ contexto = "Eres un analista financiero"
+ variable ingreso$ = 1500.50
+ variable margen = 10 % 3
+ variable comentario = ~nota_interna~
+ variable etiqueta_euro = €
+ PREGUNTAR "Cual es la tendencia?" SOBRE ingreso -> tendencia
+}
+
+EJECUTAR analista
+EXPORTAR tendencia

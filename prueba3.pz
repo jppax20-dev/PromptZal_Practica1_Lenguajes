@@ -1,0 +1,14 @@
+@modelo "claude-sonnet-4-6"
+@formato "lista"
+
+/* Agente que carga un archivo
+   y extrae informacion clave */
+AGENTE extractor {
+ contexto = "Eres un asistente de analisis de texto"
+ variable documento = CARGAR("reporte.txt")
+ EXTRAER documento SOBRE "fechas y montos" -> datos
+ GENERAR codigo DESDE "un resumen de " + datos -> resumen_final
+}
+
+EJECUTAR extractor
+EXPORTAR datos, resumen_final

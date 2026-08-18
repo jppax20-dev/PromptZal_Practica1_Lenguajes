@@ -47,6 +47,6 @@ public enum TipoToken {
     // Delimitadores: { } ( ) ,
     DELIMITADOR,
  
-    // Fin de archivo (util para que el lexer sepa cuando detenerse)
+    // Fin de archivo cuando el lexer se detiene 
     EOF
 }
