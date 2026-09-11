@@ -1,0 +1,16 @@
+@modelo "claude-sonnet-4-6"
+
+AGENTE analizador_roto {
+    contexto = "Prueba de pánico"
+    
+    // Error 1: Símbolos no definidos en el lenguaje
+    variable costo = $500 
+    
+    // Error 2: Caracteres extraños en medio de una instrucción válida
+    PREGUNTAR "Tendencias" % & SOBRE ventas -> var1
+    
+    // Error 3: Cadena sin cerrar (esto suele ciclar o crashear los while)
+    variable texto = "Inicia pero no termina
+    
+    EJECUTAR analizador_roto
+}

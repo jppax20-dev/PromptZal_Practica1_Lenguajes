@@ -150,30 +150,33 @@ public class Lexer {
     //y el contenido entre las comillas se regristra como un token tipo cadena.
     private void leerCadena() {
     int filaApertura = fila;
-    int colApertura = columna;
-    StringBuilder sb = new StringBuilder();
+        int colApertura = columna;
+        agregarToken("\"", TipoToken.DELIMITADOR, filaApertura, colApertura);
+        avanzar(); // Consumir la comilla de apertura
 
-    //Guardar la comilla de apertura en el lexema
-    sb.append(actual());
-    avanzar();
+        int filaContenido = fila;
+        int colContenido = columna;
+        StringBuilder sb = new StringBuilder();
 
-    // Leer el contenido hasta encontrar la comilla de cierre, un salto de linea o EOF
-    while (!esFinal() && actual() != '"' && actual() != '\n') {
-        sb.append(actual());
-        avanzar();
+        // Leer el contenido hasta encontrar la comilla de cierre, un salto de linea o EOF
+        while (!esFinal() && actual() != '"' && actual() != '\n') {
+            sb.append(actual());
+            avanzar();
+        }
+
+        // Validar cómo terminó el ciclo
+        if (!esFinal() && actual() == '"') {
+            // Se encontró la comilla de cierre. Se agrega el contenido como token CADENA.
+            agregarToken(sb.toString(), TipoToken.CADENA, filaContenido, colContenido);
+
+            // Registrar la comilla de cierre final como delimitador
+            agregarToken("\"", TipoToken.DELIMITADOR, fila, columna);
+            avanzar(); 
+        } else {
+            //cadena sin cerrar 
+            errores.add(new ErrorLexico(sb.toString(), "Cadena sin cerrar", filaContenido, colContenido));
+        }
     }
-
-    // Validar como termino el ciclo
-    if (!esFinal() && actual() == '"') {
-        // Se encontro la comilla de cierre. Se agrega al lexema y se guarda UN SOLO token.
-        sb.append(actual());
-        avanzar(); // Consumir la comilla de cierre final
-        agregarToken(sb.toString(), TipoToken.CADENA, filaApertura, colApertura);
-    } else {
-        // Se llego a un \n o al EOF sin cerrar la cadena. Es un error completo.
-        errores.add(new ErrorLexico(sb.toString(), "Cadena sin cerrar", filaApertura, colApertura));
-    }
-}
     //lectura de errores
     private void leerSimboloOError() {
         int filaInicio = fila;

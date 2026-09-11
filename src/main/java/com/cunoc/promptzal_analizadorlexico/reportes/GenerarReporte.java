@@ -3,6 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package com.cunoc.promptzal_analizadorlexico.reportes;
+
 import com.cunoc.promptzal_analizadorlexico.lexer.Token;
 import java.io.FileWriter;
 import java.io.IOException; 
@@ -13,60 +14,72 @@ import java.util.List;
  * @author jppax
  */
 public class GenerarReporte {
-    //Se usa append para crear las celdas individuales 
-    //pasaar tokens a una manera de visualisar en una web 
+
+    // Se usa append para crear las celdas individuales 
+    // pasaar tokens a una manera de visualisar en una web 
     public void generarReporteTokens(List<Token> tokens, String ruta) throws IOException {
         StringBuilder html = new StringBuilder();
         html.append("<!DOCTYPE html>\n<html lang=\"es\">\n<head>\n");
         html.append("<meta charset=\"UTF-8\">\n<title>Reporte de Tokens - PromptZal</title>\n");
         html.append(estilosHTML());
         html.append("</head>\n<body>\n");
+        
+        // Contenedor principal para centrar el contenido
+        html.append("<div class=\"container\">\n");
         html.append("<h1>Reporte de Tokens</h1>\n");
-        html.append("<p>Total de tokens reconocidos: ").append(tokens.size()).append("</p>\n");
- 
+        html.append("<p>Total de tokens reconocidos: <span>").append(tokens.size()).append("</span></p>\n");
+
+        // Envoltorio para la tabla (permite bordes redondeados y sombra)
+        html.append("<div class=\"table-wrapper\">\n");
         html.append("<table>\n<tr>");
         html.append("<th>No.</th><th>Lexema</th><th>Tipo</th><th>Fila</th><th>Columna</th>");
         html.append("</tr>\n");
- 
+
         for (Token t : tokens) {
             html.append("<tr>");
             html.append("<td>").append(t.getNumero()).append("</td>");
             html.append("<td>").append(escaparHTML(t.getLexema())).append("</td>");
-            html.append("<td>").append(t.getTipo()).append("</td>");
+            html.append("<td><span class=\"badge badge-tipo\">").append(t.getTipo()).append("</span></td>");
             html.append("<td>").append(t.getFila()).append("</td>");
             html.append("<td>").append(t.getColumna()).append("</td>");
             html.append("</tr>\n");
         }
- 
-        html.append("</table>\n</body>\n</html>");
- 
+
+        html.append("</table>\n");
+        html.append("</div>\n"); // Fin table-wrapper
+        html.append("</div>\n"); // Fin container
+        html.append("</body>\n</html>");
+
         escribirArchivo(ruta, html.toString());
     }
- 
-    //genera una tabla de errores 
-     // Crea la descripcion, fila y columna. Si no hay errores, lo indica explicitamente.
+
+    // genera una tabla de errores 
+    // Crea la descripcion, fila y columna. Si no hay errores, lo indica explicitamente.
     public void generarReporteErrores(List<ErrorLexico> errores, String ruta) throws IOException {
         StringBuilder html = new StringBuilder();
         html.append("<!DOCTYPE html>\n<html lang=\"es\">\n<head>\n");
-        html.append("<meta charset=\"UTF-8\">\n<title>Reporte de Errores Lexicos - PromptZal</title>\n");
+        html.append("<meta charset=\"UTF-8\">\n<title>Reporte de Errores Léxicos - PromptZal</title>\n");
         html.append(estilosHTML());
         html.append("</head>\n<body>\n");
-        html.append("<h1>Reporte de Errores Lexicos</h1>\n");
-        //ver si la lista esta vacia 
+        
+        html.append("<div class=\"container\">\n");
+        html.append("<h1>Reporte de Errores Léxicos</h1>\n");
+        
+        // ver si la lista esta vacia 
         if (errores.isEmpty()) {
-            html.append("<p class=\"sin-errores\">No se encontraron errores lexicos en el archivo analizado.</p>\n");
+            html.append("<div class=\"sin-errores\">✨ No se encontraron errores léxicos en el archivo analizado.</div>\n");
         } else {
-            html.append("<p>Total de errores encontrados: ").append(errores.size()).append("</p>\n");
+            html.append("<p>Total de errores encontrados: <span class=\"error-count\">").append(errores.size()).append("</span></p>\n");
+            html.append("<div class=\"table-wrapper\">\n");
             html.append("<table>\n<tr>");
-            html.append("<th>No.</th><th>Lexema / Caracter</th><th>Descripcion del error</th><th>Fila</th><th>Columna</th>");
+            html.append("<th>No.</th><th>Lexema / Caracter</th><th>Descripción del error</th><th>Fila</th><th>Columna</th>");
             html.append("</tr>\n");
             int contadorErrores = 1;
-            //recorre los errores uno por uno, va creando filas y columnas conforme avanza;
+            // recorre los errores uno por uno, va creando filas y columnas conforme avanza;
             for (ErrorLexico e : errores) {
-
                 html.append("<tr class=\"fila-error\">"); 
                 html.append("<td>").append(contadorErrores).append("</td>");
-                html.append("<td>").append(escaparHTML(e.getLexema())).append("</td>");
+                html.append("<td class=\"lexema-error\">").append(escaparHTML(e.getLexema())).append("</td>");
                 html.append("<td>").append(escaparHTML(e.getDescripcion())).append("</td>");
                 html.append("<td>").append(e.getFila()).append("</td>");
                 html.append("<td>").append(e.getColumna()).append("</td>");
@@ -74,15 +87,17 @@ public class GenerarReporte {
                 contadorErrores++;
             }
             html.append("</table>\n");
+            html.append("</div>\n");
         }
 
+        html.append("</div>\n");
         html.append("</body>\n</html>");
 
         escribirArchivo(ruta, html.toString());
     }
- 
-     //Reemplaza caracteres especiales de HTML para que el contenido de los
-      //lexemas (comillas, simbolos, etc.) no rompa la estructura de la tabla.
+
+    // Reemplaza caracteres especiales de HTML para que el contenido de los
+    // lexemas (comillas, simbolos, etc.) no rompa la estructura de la tabla.
     private String escaparHTML(String texto) {
         if (texto == null) {
             return "";
@@ -93,21 +108,31 @@ public class GenerarReporte {
                 .replace(">", "&gt;")
                 .replace("\"", "&quot;");
     }
- 
+
     private String estilosHTML() {
         return "<style>\n"
-                + "body { font-family: Arial, sans-serif; margin: 30px; background-color: #f5f5f5; }\n"
-                + "h1 { color: #1a3c6e; }\n"
-                + "table { border-collapse: collapse; width: 100%; background-color: white; }\n"
-                + "th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }\n"
-                + "th { background-color: #1a3c6e; color: white; }\n"
-                + "tr:nth-child(even) { background-color: #f2f2f2; }\n"
-                + ".sin-errores { color: green; font-weight: bold; }\n"
-                // Aquí agregamos el estilo para los errores
-                + ".fila-error { color: #cc0000; background-color: #ffe6e6; }\n" 
+                + "@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');\n"
+                + "body { font-family: 'Inter', system-ui, -apple-system, sans-serif; background-color: #f8fafc; color: #1e293b; margin: 0; padding: 40px 20px; display: flex; justify-content: center; }\n"
+                + ".container { max-width: 1100px; width: 100%; }\n"
+                + "h1 { color: #0f172a; font-size: 2.25rem; font-weight: 700; margin-bottom: 0.5rem; letter-spacing: -0.025em; }\n"
+                + "p { color: #64748b; font-size: 1.1rem; margin-top: 0; margin-bottom: 2rem; }\n"
+                + "p span { background-color: #eff6ff; color: #2563eb; font-weight: 600; padding: 4px 12px; border-radius: 9999px; font-size: 0.95rem; }\n"
+                + "p span.error-count { background-color: #fef2f2; color: #dc2626; }\n"
+                + ".table-wrapper { background: #ffffff; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.05); overflow: hidden; border: 1px solid #e2e8f0; }\n"
+                + "table { width: 100%; border-collapse: collapse; text-align: left; }\n"
+                + "th { background-color: #f8fafc; color: #475569; font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; padding: 16px 24px; border-bottom: 1px solid #e2e8f0; }\n"
+                + "td { padding: 16px 24px; border-bottom: 1px solid #f1f5f9; color: #334155; font-size: 0.95rem; }\n"
+                + "tr:last-child td { border-bottom: none; }\n"
+                + "tr:hover { background-color: #f8fafc; transition: all 0.2s ease; }\n"
+                + "td:nth-child(2) { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; color: #0369a1; font-weight: 600; }\n"
+                + ".badge-tipo { background-color: #f1f5f9; color: #475569; padding: 4px 10px; border-radius: 6px; font-size: 0.85rem; font-weight: 500; border: 1px solid #e2e8f0; }\n"
+                + ".sin-errores { display: inline-block; background-color: #dcfce7; color: #166534; padding: 16px 24px; border-radius: 8px; font-weight: 500; border: 1px solid #bbf7d0; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }\n"
+                + ".fila-error td { background-color: #fef2f2; color: #991b1b; border-bottom: 1px solid #fee2e2; }\n"
+                + ".fila-error:hover td { background-color: #fee2e2; }\n"
+                + ".fila-error .lexema-error { color: #b91c1c; background-color: #fee2e2; border-radius: 4px; padding: 2px 6px; }\n"
                 + "</style>\n";
     }
- 
+
     private void escribirArchivo(String ruta, String contenido) throws IOException {
         try (FileWriter writer = new FileWriter(ruta)) {
             writer.write(contenido);
