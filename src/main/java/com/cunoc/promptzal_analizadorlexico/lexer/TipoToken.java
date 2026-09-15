@@ -44,9 +44,6 @@ public enum TipoToken {
     // Operador de concatenacion: +
     OP_CONCATENACION,
  
-    // Delimitadores: { } ( ) ,
+    // Delimitadores: { } ( ) 
     DELIMITADOR,
- 
-    // Fin de archivo cuando el lexer se detiene 
-    EOF
 }

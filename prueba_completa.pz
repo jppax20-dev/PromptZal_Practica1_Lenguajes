@@ -1,0 +1,29 @@
+/*
+  Archivo de prueba completo para validar el analizador lexico de PromptZal.
+  Cubre: directivas, palabras reservadas, comandos de IA, funcion CARGAR,
+  conectores, identificadores, cadenas, enteros, decimales, operadores,
+  delimitadores, comentario de linea y comentario de bloque.
+*/
+
+@modelo "claude-sonnet-4-6"
+@rol "analista de datos"
+@formato "markdown"
+
+// Agente principal de prueba
+AGENTE analista {
+  contexto = "Eres un analista de datos experto"
+  variable ventas = CARGAR("ventas.csv")
+  variable limite = 5
+  variable tolerancia = 0.75
+
+  PREGUNTAR "Cuales son las 3 tendencias principales?" SOBRE ventas -> tendencias
+  GENERAR codigo DESDE "grafica de barras de " + tendencias -> script
+  RESUMIR tendencias EN 100 palabras -> resumen
+  ANALIZAR resumen SOBRE "claridad y precision" -> revision
+  TRADUCIR resumen EN "ingles" -> resumenIngles
+  CLASIFICAR tendencias EN "positivo, neutral, negativo" -> etiquetas
+  EXTRAER etiquetas COMO "lista" -> etiquetasFinales
+}
+
+EJECUTAR analista
+EXPORTAR resumen, script, revision

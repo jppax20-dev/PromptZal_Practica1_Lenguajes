@@ -4,11 +4,11 @@
  */
 package com.cunoc.promptzal_analizadorlexico.lexer;
 import com.cunoc.promptzal_analizadorlexico.reportes.ErrorLexico;
-
+ 
 //Usamos las herramientas de lista 
 import java.util.ArrayList;
 import java.util.List;
-
+ 
 /**
  *
  * @author jppax
@@ -34,7 +34,7 @@ public class Lexer {
         this.errores = new ArrayList<>();
     }
  
-    //Se recorre todo el codigo y no se detiene anete errores 
+    //Se recorre todo el codigo y no se detiene ante errores
     public void analizar() {
         while (!esFinal()) {
             char c = actual();
@@ -75,7 +75,7 @@ public class Lexer {
  
         String lexema = sb.toString();
  
-        // Clasificacion con switch 
+        // Clasificacion con switch
         switch (lexema) {
             case "@modelo", "@rol", "@formato" ->
                 agregarToken(lexema, TipoToken.DIRECTIVA, filaInicio, colInicio);
@@ -98,7 +98,7 @@ public class Lexer {
         agregarToken(lexema, clasificarPalabra(lexema), filaInicio, colInicio);
     }
  
-    //Reconome el tipo de token y compara los lexemas con las categorias del lenguale con un switch
+    //Reconoce el tipo de token y compara los lexemas con las categorias del lenguaje con un switch
     private TipoToken clasificarPalabra(String lexema) {
         switch (lexema) {
             case "AGENTE", "contexto", "variable", "EJECUTAR", "EXPORTAR" -> {
@@ -131,7 +131,7 @@ public class Lexer {
             avanzar();
         }
  
-        // Decimal un punto seguido de al menos un digito
+        // Decimal: un punto seguido de al menos un digito
         if (!esFinal() && actual() == '.' && siguiente() != '\0' && esDigito(siguiente())) {
             esDecimal = true;
             sb.append(actual());
@@ -145,18 +145,15 @@ public class Lexer {
         String lexema = sb.toString();
         agregarToken(lexema, esDecimal ? TipoToken.DECIMAL : TipoToken.ENTERO, filaInicio, colInicio);
     }
-    
-    //donde se reconoce cadenas, con comillas cuando cierran se registrar como token delimitador 
-    //y el contenido entre las comillas se regristra como un token tipo cadena.
+ 
+    //Reconoce cadenas; las comillas se registran como token delimitador
+    //y el contenido entre las comillas se registra como un token tipo cadena.
     private void leerCadena() {
-    int filaApertura = fila;
-        int colApertura = columna;
-        agregarToken("\"", TipoToken.DELIMITADOR, filaApertura, colApertura);
-        avanzar(); // Consumir la comilla de apertura
-
-        int filaContenido = fila;
-        int colContenido = columna;
+        int filaInicio = fila;
+        int colInicio = columna;
         StringBuilder sb = new StringBuilder();
+        sb.append(actual()); // comilla de apertura
+        avanzar();
 
         // Leer el contenido hasta encontrar la comilla de cierre, un salto de linea o EOF
         while (!esFinal() && actual() != '"' && actual() != '\n') {
@@ -164,20 +161,17 @@ public class Lexer {
             avanzar();
         }
 
-        // Validar cómo terminó el ciclo
         if (!esFinal() && actual() == '"') {
-            // Se encontró la comilla de cierre. Se agrega el contenido como token CADENA.
-            agregarToken(sb.toString(), TipoToken.CADENA, filaContenido, colContenido);
-
-            // Registrar la comilla de cierre final como delimitador
-            agregarToken("\"", TipoToken.DELIMITADOR, fila, columna);
-            avanzar(); 
+            sb.append(actual()); // comilla de cierre
+            avanzar();
+            agregarToken(sb.toString(), TipoToken.CADENA, filaInicio, colInicio);
         } else {
-            //cadena sin cerrar 
-            errores.add(new ErrorLexico(sb.toString(), "Cadena sin cerrar", filaContenido, colContenido));
+            // cadena sin cerrar
+            errores.add(new ErrorLexico(sb.toString(), "Cadena sin cerrar", filaInicio, colInicio));
         }
     }
-    //lectura de errores
+ 
+    //lectura de simbolos y errores
     private void leerSimboloOError() {
         int filaInicio = fila;
         int colInicio = columna;
@@ -192,7 +186,7 @@ public class Lexer {
                 avanzar();
                 agregarToken("+", TipoToken.OP_CONCATENACION, filaInicio, colInicio);
             }
-            case '{', '}', '(', ')', ',' -> {
+            case '{', '}', '(', ')' -> {
                 avanzar();
                 agregarToken(String.valueOf(c), TipoToken.DELIMITADOR, filaInicio, colInicio);
             }
@@ -288,5 +282,9 @@ public class Lexer {
  
     public List<ErrorLexico> getErrores() {
         return errores;
+    }
+    
+    public int getTotalLineas() {
+        return fila;
     }
 }

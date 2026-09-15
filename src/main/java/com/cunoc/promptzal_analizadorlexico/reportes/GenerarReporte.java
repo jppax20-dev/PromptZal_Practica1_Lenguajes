@@ -8,13 +8,14 @@ import com.cunoc.promptzal_analizadorlexico.lexer.Token;
 import java.io.FileWriter;
 import java.io.IOException; 
 import java.util.List; 
-
+import java.util.LinkedHashMap;
+import java.util.Map;
 /**
  *
  * @author jppax
  */
 public class GenerarReporte {
-
+    
     // Se usa append para crear las celdas individuales 
     // pasaar tokens a una manera de visualisar en una web 
     public void generarReporteTokens(List<Token> tokens, String ruta) throws IOException {
@@ -132,6 +133,54 @@ public class GenerarReporte {
                 + ".fila-error .lexema-error { color: #b91c1c; background-color: #fee2e2; border-radius: 4px; padding: 2px 6px; }\n"
                 + "</style>\n";
     }
+    
+    public void generarReporteEstadisticas(List<Token> tokens, List<ErrorLexico> errores,
+                                        int totalLineas, String ruta) throws IOException {
+    // Conteo de frecuencia por tipo de token, en el orden en que aparece cada tipo por primera vez
+        Map<String, Integer> frecuencia = new LinkedHashMap<>();
+        for (Token t : tokens) {
+            String tipo = t.getTipo().toString();
+            frecuencia.put(tipo, frecuencia.getOrDefault(tipo, 0) + 1);
+        }
+
+        StringBuilder html = new StringBuilder();
+        html.append("<!DOCTYPE html>\n<html lang=\"es\">\n<head>\n");
+        html.append("<meta charset=\"UTF-8\">\n<title>Reporte de Estadísticas - PromptZal</title>\n");
+        html.append(estilosHTML());
+        html.append("</head>\n<body>\n");
+
+        html.append("<div class=\"container\">\n");
+        html.append("<h1>Reporte de Estadísticas</h1>\n");
+        html.append("<p>Resumen general del análisis léxico</p>\n");
+
+        // Resumen de totales
+        html.append("<div class=\"table-wrapper\">\n");
+        html.append("<table>\n<tr><th>Métrica</th><th>Valor</th></tr>\n");
+        html.append("<tr><td>Total de tokens reconocidos</td><td><span>")
+            .append(tokens.size()).append("</span></td></tr>\n");
+        html.append("<tr><td>Total de líneas analizadas</td><td><span>")
+            .append(totalLineas).append("</span></td></tr>\n");
+        html.append("<tr><td>Total de errores léxicos</td><td><span class=\"error-count\">")
+            .append(errores.size()).append("</span></td></tr>\n");
+        html.append("</table>\n</div>\n");
+
+        // Frecuencia por tipo de token
+        html.append("<h1 style=\"font-size:1.5rem; margin-top:2.5rem;\">Frecuencia por tipo de token</h1>\n");
+        html.append("<div class=\"table-wrapper\">\n");
+        html.append("<table>\n<tr><th>Tipo de token</th><th>Cantidad</th></tr>\n");
+        for (Map.Entry<String, Integer> entrada : frecuencia.entrySet()) {
+            html.append("<tr>");
+            html.append("<td><span class=\"badge-tipo\">").append(escaparHTML(entrada.getKey())).append("</span></td>");
+            html.append("<td>").append(entrada.getValue()).append("</td>");
+            html.append("</tr>\n");
+        }
+        html.append("</table>\n</div>\n");
+
+        html.append("</div>\n");
+        html.append("</body>\n</html>");
+
+        escribirArchivo(ruta, html.toString());
+}
 
     private void escribirArchivo(String ruta, String contenido) throws IOException {
         try (FileWriter writer = new FileWriter(ruta)) {

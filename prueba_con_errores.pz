@@ -1,0 +1,22 @@
+@modelo "claude-sonnet-4-6"
+@rol "analista de datos"
+
+AGENTE analista {
+  contexto = "Eres un analista de datos experto"
+  variable ventas = CARGAR("ventas.csv")
+
+  // Error 1: caracter no reconocido
+  variable limite = 5 # error de simbolo invalido
+
+  // Error 2: cadena sin cerrar (nunca llega la comilla de cierre)
+  PREGUNTAR "Cuales son las tendencias principales? SOBRE ventas -> tendencias
+
+  // Error 3: otro caracter no reconocido
+  RESUMIR tendencias EN 100 palabras -> resumen $
+
+  // Error 4: guion suelto sin '>' despues (no forma el conector ->)
+  GENERAR codigo DESDE "grafica de barras" - script
+}
+
+EJECUTAR analista
+EXPORTAR resumen

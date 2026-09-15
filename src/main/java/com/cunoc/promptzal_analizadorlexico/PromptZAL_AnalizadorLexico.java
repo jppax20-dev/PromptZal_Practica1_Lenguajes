@@ -3,12 +3,12 @@
  */
 
 package com.cunoc.promptzal_analizadorlexico;
-import com.cunoc.promptzal_analizadorlexico.lexer.TipoToken;
+
 import com.cunoc.promptzal_analizadorlexico.lexer.Token;
 import com.cunoc.promptzal_analizadorlexico.lexer.Lexer;
 import com.cunoc.promptzal_analizadorlexico.reportes.ErrorLexico;
 import com.cunoc.promptzal_analizadorlexico.reportes.GenerarReporte;
-import com.cunoc.promptzal_analizadorlexico.LectorArchivo;
+
 //herramientas 
 import java.io.File;
 import java.io.IOException;
@@ -26,42 +26,48 @@ public class PromptZAL_AnalizadorLexico {
         boolean continuar = true;
 
         while (continuar) {
-            System.out.print("\nPor favor ingrese la ruta del archivo .pz para analizar: ");
-            String ruta = sc.nextLine().trim();
+        System.out.print("\nPor favor ingrese la ruta del archivo .pz para analizar: ");
+        String ruta = sc.nextLine().trim();
 
-            String codigo = LectorArchivo.leer(ruta);
-            if (codigo == null) {
-                System.out.println("No se pudo leer el archivo. Verifique la ruta.");
-                continuar = preguntarSiContinuar(sc);
-                continue; 
-            }
-
-            Lexer lexer = new Lexer(codigo);
-            lexer.analizar();
-
-            List<Token> tokens = lexer.getTokens();
-            List<ErrorLexico> errores = lexer.getErrores();
-
-            MostrarConsola.mostrarTabla(tokens, errores);
-
-            // Generar nombres dinámicos basados en el archivo de entrada
-            String nombreBase = obtenerNombreBase(ruta);
-            String rutaTokens = nombreBase + "_reporte_tokens.html";
-            String rutaErrores = nombreBase + "_reporte_errores.html";
-
-            try {
-                GenerarReporte generador = new GenerarReporte();
-                generador.generarReporteTokens(tokens, rutaTokens);
-                generador.generarReporteErrores(errores, rutaErrores);
-                System.out.println("\nReportes generados exitosamente: ");
-                System.out.println("1. " + rutaTokens);
-                System.out.println("2. " + rutaErrores);
-            } catch (IOException e) {
-                System.out.println("Error al generar los reportes HTML: " + e.getMessage());
-            }
-
+        String codigo = LectorArchivo.leer(ruta);
+        if (codigo == null) {
+            System.out.println("No se pudo leer el archivo. Verifique la ruta.");
             continuar = preguntarSiContinuar(sc);
+            continue; 
         }
+
+        Lexer lexer = new Lexer(codigo);
+        lexer.analizar();
+
+        List<Token> tokens = lexer.getTokens();
+        List<ErrorLexico> errores = lexer.getErrores();
+
+        MostrarConsola.mostrarTabla(tokens, errores);
+
+        // Generar nombres dinámicos basados en el archivo de entrada
+        String nombreBase = obtenerNombreBase(ruta);
+        String rutaTokens = nombreBase + "_reporte_tokens.html";
+        String rutaErrores = nombreBase + "_reporte_errores.html";
+
+        try {
+            GenerarReporte generador = new GenerarReporte();
+            generador.generarReporteTokens(tokens, rutaTokens);
+            generador.generarReporteErrores(errores, rutaErrores);
+
+            // Reporte de estadisticas
+            String rutaEstadisticas = nombreBase + "_reporte_estadisticas.html";
+            generador.generarReporteEstadisticas(tokens, errores, lexer.getTotalLineas(), rutaEstadisticas);
+
+            System.out.println("\nReportes generados exitosamente: ");
+            System.out.println("1. " + rutaTokens);
+            System.out.println("2. " + rutaErrores);
+            System.out.println("3. " + rutaEstadisticas);
+        } catch (IOException e) {
+            System.out.println("Error al generar los reportes HTML: " + e.getMessage());
+        }
+
+        continuar = preguntarSiContinuar(sc);
+    }
 
         System.out.println("\nPrograma finalizado.");
     }
@@ -88,7 +94,7 @@ public class PromptZAL_AnalizadorLexico {
             return false;
         } else {
             System.out.println("Entrada no valida. Por favor, ingrese 's' para si, o 'n' para no.");
+            }
         }
     }
-}
 } // final 
