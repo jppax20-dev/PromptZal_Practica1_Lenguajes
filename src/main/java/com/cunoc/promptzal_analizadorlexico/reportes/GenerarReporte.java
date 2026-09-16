@@ -17,7 +17,6 @@ import java.util.Map;
 public class GenerarReporte {
     
     // Se usa append para crear las celdas individuales 
-    // pasaar tokens a una manera de visualisar en una web 
     public void generarReporteTokens(List<Token> tokens, String ruta) throws IOException {
         StringBuilder html = new StringBuilder();
         html.append("<!DOCTYPE html>\n<html lang=\"es\">\n<head>\n");
@@ -30,14 +29,40 @@ public class GenerarReporte {
         html.append("<h1>Reporte de Tokens</h1>\n");
         html.append("<p>Total de tokens reconocidos: <span>").append(tokens.size()).append("</span></p>\n");
 
-        // Envoltorio para la tabla (permite bordes redondeados y sombra)
         html.append("<div class=\"table-wrapper\">\n");
         html.append("<table>\n<tr>");
         html.append("<th>No.</th><th>Lexema</th><th>Tipo</th><th>Fila</th><th>Columna</th>");
         html.append("</tr>\n");
 
         for (Token t : tokens) {
-            html.append("<tr>");
+            String colorFondo = "#ffffff"; // Blanco por defecto
+            
+            // Asignación de colores para cada tipo de token
+            if (t.getTipo() != null) {
+                switch (t.getTipo().toString()) {
+                    case "DIRECTIVA": 
+                        colorFondo = "#ADD8E6"; 
+                        break;
+                    case "PALABRA_RESERVADA": 
+                        colorFondo = "#DDA0DD";
+                        break;
+                    case "COMANDO_IA": 
+                        colorFondo = "#FFCC99"; 
+                        break;
+                    case "CADENA": 
+                        colorFondo = "#AAFFAA"; 
+                        break;
+                    case "IDENTIFICADOR": 
+                        colorFondo = "#FFFFCC"; 
+                        break;
+                    case "ENTERO":
+                    case "DECIMAL": 
+                        colorFondo = "#E0FFFF"; 
+                        break;
+                }
+            }
+
+            html.append("<tr style=\"background-color: ").append(colorFondo).append(";\">");
             html.append("<td>").append(t.getNumero()).append("</td>");
             html.append("<td>").append(escaparHTML(t.getLexema())).append("</td>");
             html.append("<td><span class=\"badge badge-tipo\">").append(t.getTipo()).append("</span></td>");
@@ -119,7 +144,7 @@ public class GenerarReporte {
                 + "p { color: #64748b; font-size: 1.1rem; margin-top: 0; margin-bottom: 2rem; }\n"
                 + "p span { background-color: #eff6ff; color: #2563eb; font-weight: 600; padding: 4px 12px; border-radius: 9999px; font-size: 0.95rem; }\n"
                 + "p span.error-count { background-color: #fef2f2; color: #dc2626; }\n"
-                + ".table-wrapper { background: #ffffff; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.05); overflow: hidden; border: 1px solid #e2e8f0; }\n"
+                + ".table-wrapper { background: #ffffff; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); overflow: hidden; border: 2px solid #000000; }\n"
                 + "table { width: 100%; border-collapse: collapse; text-align: left; }\n"
                 + "th { background-color: #f8fafc; color: #475569; font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; padding: 16px 24px; border-bottom: 1px solid #e2e8f0; }\n"
                 + "td { padding: 16px 24px; border-bottom: 1px solid #f1f5f9; color: #334155; font-size: 0.95rem; }\n"
@@ -155,7 +180,7 @@ public class GenerarReporte {
 
         // Resumen de totales
         html.append("<div class=\"table-wrapper\">\n");
-        html.append("<table>\n<tr><th>Métrica</th><th>Valor</th></tr>\n");
+        html.append("<table>\n<tr><th style=\"background-color: #DDA0DD; color: #1e293b;\">Métrica</th><th style=\"background-color: #DDA0DD; color: #1e293b;\">Valor</th></tr>\n");//html.append("<table>\n<tr><th>Métrica</th><th>Valor</th></tr>\n");
         html.append("<tr><td>Total de tokens reconocidos</td><td><span>")
             .append(tokens.size()).append("</span></td></tr>\n");
         html.append("<tr><td>Total de líneas analizadas</td><td><span>")
@@ -167,7 +192,7 @@ public class GenerarReporte {
         // Frecuencia por tipo de token
         html.append("<h1 style=\"font-size:1.5rem; margin-top:2.5rem;\">Frecuencia por tipo de token</h1>\n");
         html.append("<div class=\"table-wrapper\">\n");
-        html.append("<table>\n<tr><th>Tipo de token</th><th>Cantidad</th></tr>\n");
+        html.append("<table>\n<tr><th style=\"background-color: #ADD8E6; color: #1e293b;\">Tipo de token</th><th style=\"background-color: #ADD8E6; color: #1e293b;\">Cantidad</th></tr>\n");//html.append("<table>\n<tr><th>Tipo de token</th><th>Cantidad</th></tr>\n");
         for (Map.Entry<String, Integer> entrada : frecuencia.entrySet()) {
             html.append("<tr>");
             html.append("<td><span class=\"badge-tipo\">").append(escaparHTML(entrada.getKey())).append("</span></td>");

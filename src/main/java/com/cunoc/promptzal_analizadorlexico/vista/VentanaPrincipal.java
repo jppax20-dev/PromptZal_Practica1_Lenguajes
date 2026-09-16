@@ -30,10 +30,12 @@ import java.io.File;
 import java.util.List;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import javax.swing.BorderFactory;
+import java.awt.Color;
 
 public class VentanaPrincipal extends JFrame {
 
-    private JTextArea areaEditor;
+    private EditorConFondo areaEditor;
     private JButton botonAbrir;
     private JButton botonGuardar;
     private JButton botonAnalizar;
@@ -69,9 +71,13 @@ public class VentanaPrincipal extends JFrame {
     }
 
     private void construirEditor() {
-        areaEditor = new JTextArea();
+        areaEditor = new EditorConFondo("logo_promptzal.png");
+        
         JScrollPane scroll = new JScrollPane(areaEditor);
         scroll.setPreferredSize(new java.awt.Dimension(900, 300));
+        
+        scroll.getViewport().setOpaque(false);
+        
         add(scroll, BorderLayout.CENTER);
     }
 
@@ -85,13 +91,20 @@ public class VentanaPrincipal extends JFrame {
         botonVerAFD = new JButton("Ver AFD");
         botonSalir = new JButton("Salir");
         
+        int grosor = 2;
+        botonAbrir.setBorder(BorderFactory.createLineBorder(Color.BLUE, grosor));
+        botonGuardar.setBorder(BorderFactory.createLineBorder(Color.BLUE, grosor));
+        botonAnalizar.setBorder(BorderFactory.createLineBorder(Color.BLUE, grosor));
+        botonGenerarReportes.setBorder(BorderFactory.createLineBorder(new Color(0, 153, 0), grosor));
+        botonVerAFD.setBorder(BorderFactory.createLineBorder(Color.ORANGE, grosor));
+        botonSalir.setBorder(BorderFactory.createLineBorder(Color.RED, grosor));
 
         botonAbrir.addActionListener(e -> abrirArchivo());
         botonGuardar.addActionListener(e -> guardarArchivo());
         botonAnalizar.addActionListener(e -> analizarCodigo());
         botonGenerarReportes.addActionListener(e -> generarReportes());
         botonVerAFD.addActionListener(e -> verAFD());
-        botonSalir.addActionListener(e -> System.exit(0));
+        botonSalir.addActionListener(e -> confirmarSalida());
 
         panelBotones.add(botonAbrir);
         panelBotones.add(botonGuardar);
@@ -108,11 +121,15 @@ public class VentanaPrincipal extends JFrame {
         new Object[]{"No.", "Lexema", "Tipo", "Fila", "Columna"}, 0
         );
         tablaTokens = new JTable(modeloTokens);
+        
+        tablaTokens.setDefaultRenderer(Object.class, new RenderizadorTablaTokens());
 
         modeloErrores = new DefaultTableModel(
             new Object[]{"No.", "Lexema/Caracter", "Descripcion", "Fila", "Columna"}, 0
         );
         tablaErrores = new JTable(modeloErrores);
+        
+        tablaErrores.setDefaultRenderer(Object.class, new RenderizadorTablaErrores());
 
         // modelo para estadisticas (metrica y valor, mismo formato para totales y frecuencias)
         modeloEstadisticas = new DefaultTableModel(
@@ -123,15 +140,31 @@ public class VentanaPrincipal extends JFrame {
         JTabbedPane pestañas = new JTabbedPane();
         pestañas.addTab("Tokens", new JScrollPane(tablaTokens));
         pestañas.addTab("Errores", new JScrollPane(tablaErrores));
-        pestañas.addTab("Estadisticas", new JScrollPane(tablaEstadisticas)); // NUEVO
-        pestañas.setPreferredSize(new java.awt.Dimension(900, 300));
+        pestañas.addTab("Estadisticas", new JScrollPane(tablaEstadisticas)); 
+        
+        pestañas.setBackgroundAt(0, new java.awt.Color(144, 238, 144)); 
+        pestañas.setBackgroundAt(1, new java.awt.Color(255, 128, 128)); 
+        pestañas.setBackgroundAt(2, new java.awt.Color(216, 191, 216)); 
 
+        pestañas.setForegroundAt(0, java.awt.Color.BLACK);
+        pestañas.setForegroundAt(1, java.awt.Color.BLACK);
+        pestañas.setForegroundAt(2, java.awt.Color.BLACK);
+        
+        pestañas.setPreferredSize(new java.awt.Dimension(900, 300));
         add(pestañas, BorderLayout.SOUTH);
     }
 
     private void analizarCodigo() {
         String codigo = areaEditor.getText();
-
+        
+        if (codigo.isEmpty()) {
+            JOptionPane.showMessageDialog(this, 
+                "El editor está vacío. Escriba o cargue código en lenguaje PromptZal antes de analizar.", 
+                "Advertencia", 
+                JOptionPane.WARNING_MESSAGE);
+            return; // No se ejecuta nada de lo que se encuentra abajo
+        }
+        
         Lexer lexer = new Lexer(codigo);
         lexer.analizar();
         
@@ -199,6 +232,18 @@ public class VentanaPrincipal extends JFrame {
     }
 
     private void guardarArchivo() {
+        if (areaEditor.getText().trim().isEmpty()) {
+            int respuesta = JOptionPane.showConfirmDialog(this,
+                    "El editor está vacío. ¿Seguro que desea guardar un archivo en blanco?",
+                    "Aviso de documento vacío",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.QUESTION_MESSAGE);
+            
+            if (respuesta != JOptionPane.YES_OPTION) {
+                return; // cancelar guardado
+            }
+        }
+        
         JFileChooser selector = new JFileChooser();
 
         if (rutaActual != null) {
@@ -255,7 +300,7 @@ public class VentanaPrincipal extends JFrame {
                 }
             }
 
-            // Las rutas ahora se arman dentro de la carpeta que se eligio
+            // Las rutas se arman dentro de la carpeta que se eligio
             String rutaTokens = new File(carpetaDestino, "Reporte_Tokens_" + nombreArchivo + "_" + marcaTiempo + ".html").getAbsolutePath();
             String rutaErrores = new File(carpetaDestino, "Reporte_Errores_" + nombreArchivo + "_" + marcaTiempo + ".html").getAbsolutePath();
             String rutaEstadisticas = new File(carpetaDestino, "Reporte_Estadisticas_" + nombreArchivo + "_" + marcaTiempo + ".html").getAbsolutePath();
@@ -288,6 +333,18 @@ public class VentanaPrincipal extends JFrame {
 
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this, "Error al generar o abrir el AFD: " + ex.getMessage());
+        }
+    }
+    
+    private void confirmarSalida() {
+        int respuesta = JOptionPane.showConfirmDialog(this,
+                "¿Está seguro que desea salir? Cualquier código no guardado se perderá.",
+                "Confirmar Salida",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.WARNING_MESSAGE);
+
+        if (respuesta == JOptionPane.YES_OPTION) {
+            System.exit(0);
         }
     }
     

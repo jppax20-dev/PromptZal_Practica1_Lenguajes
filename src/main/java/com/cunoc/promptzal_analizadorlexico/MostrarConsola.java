@@ -3,10 +3,10 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package com.cunoc.promptzal_analizadorlexico;
- 
+
 import com.cunoc.promptzal_analizadorlexico.lexer.Token;
 import com.cunoc.promptzal_analizadorlexico.reportes.ErrorLexico;
- 
+
 import java.util.List;
 
 /**
@@ -14,7 +14,7 @@ import java.util.List;
  * @author jppax
  */
 public class MostrarConsola {
- 
+    
     // Constantes de colores ANSI
     private static final String RESET = "\u001B[0m";
     private static final String ROJO = "\u001B[31m";
@@ -27,7 +27,7 @@ public class MostrarConsola {
 
     public static void mostrarTabla(List<Token> tokens, List<ErrorLexico> errores) {
         System.out.println(CYAN + "=== TOKENS ===" + RESET);
-        
+       
         //encabezado de la tabla para los tokens
         System.out.println("---------------------------------------------------------------------------------------------------");
         System.out.printf("%-5s %-40s %-25s %-10s %-10s\n", "No.", "Lexema", "Tipo", "Fila", "Columna");
@@ -66,7 +66,7 @@ public class MostrarConsola {
             if (lexemaPrint.length() > 37) {
                 lexemaPrint = lexemaPrint.substring(0, 37) + "...";
             }
-            
+         
             // Imprimir la fila usando printf, concatenando el color al inicio y el RESET al final
             System.out.printf(color + "%-5d %-40s %-25s %-10d %-10d" + RESET + "\n", 
                     t.getNumero(), 
@@ -84,19 +84,19 @@ public class MostrarConsola {
             // encabezado errores
             System.out.printf(ROJO + "%-5s %-30s %-40s %-10s %-10s\n" + RESET, "No.", "Lexema/Caracter", "Descripcion", "Fila", "Columna");
             System.out.println("---------------------------------------------------------------------------------------------------------");
-            
-            int contadorError = 1; 
-            
+           
+            int contadorError = 1;          
             for (ErrorLexico e : errores) {
                 System.out.printf(ROJO + "%-5d %-30s %-40s %-10d %-10d\n" + RESET, 
                         contadorError,
                         e.getLexema(), 
                         e.getDescripcion(), 
                         e.getFila(), 
-                        e.getColumna());
-                
+                        e.getColumna());             
+
                 contadorError++; 
             }
         }
     }
-}
+} 
+
