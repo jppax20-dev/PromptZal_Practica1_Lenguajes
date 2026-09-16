@@ -1,0 +1,40 @@
+// Prueba de estres para el analizador de PromptZal
+// Combina casos limite validos: sin romper la lexica
+
+@modelo "claude-sonnet-4-6"
+@rol    "analista de riesgo financiero"
+@formato "markdown"
+
+/* Comentario de bloque
+   que se extiende varias lineas
+   e incluye simbolos raros: @ -> = + "texto" 123 0.5
+   pero no debe generar ningun token */
+
+/* dos */ /* comentarios */ seguidos
+
+AGENTE analista_riesgo {
+	contexto="Eres un analista financiero senior"
+	variable ventas=CARGAR("ventas_2026.csv")
+	variable rutaWindows=CARGAR("C:\datos\reportes\ventas.csv")
+	variable vacio=""
+	variable AgenteFalso="no es palabra reservada"
+	variable EXPORTARtambien=10
+	variable n1=007
+	variable n2=0.0
+	variable n3=123456.789
+	PREGUNTAR "Cuales son las 3 tendencias principales?"SOBRE ventas->tendencias
+	RESUMIR tendencias EN 100 palabras->resumen//comentario pegado sin espacio
+	ANALIZAR ventas SOBRE "riesgo"COMO "porcentaje"->riesgo
+	GENERAR "Escribe un titulo"+"llamativo"+"para el reporte"->titulo
+	TRADUCIR resumen EN "ingles"->resumenEn
+	CLASIFICAR riesgo EN "alto,medio,bajo"->categoria
+	EXTRAER "monto total"DESDE resumen->monto
+	variable combo=riesgo+categoria+monto
+	variable            espaciado	=	CARGAR("otro archivo con espacios.csv")
+}
+
+EJECUTAR analista_riesgo
+EXPORTAR resumen
+EXPORTAR titulo
+EXPORTAR categoria
+// fin del archivo sin salto de linea final

@@ -15,7 +15,7 @@ public class LectorArchivo {
     //es el encargado de leer el archivo y guardarlo mientras tanto en la ram 
     public static String leer(String ruta){
         StringBuilder sb = new StringBuilder();
-                
+
         try(BufferedReader br = new BufferedReader(new FileReader(ruta))){
             String linea; 
             while ((linea = br.readLine()) != null){
@@ -27,5 +27,5 @@ public class LectorArchivo {
         }        
         return sb.toString();
     }
-    
-} 
+
+}

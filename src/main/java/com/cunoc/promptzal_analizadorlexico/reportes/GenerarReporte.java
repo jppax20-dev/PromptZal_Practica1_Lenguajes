@@ -47,8 +47,8 @@ public class GenerarReporte {
         }
 
         html.append("</table>\n");
-        html.append("</div>\n"); // Fin table-wrapper
-        html.append("</div>\n"); // Fin container
+        html.append("</div>\n"); 
+        html.append("</div>\n"); 
         html.append("</body>\n</html>");
 
         escribirArchivo(ruta, html.toString());
@@ -68,7 +68,7 @@ public class GenerarReporte {
         
         // ver si la lista esta vacia 
         if (errores.isEmpty()) {
-            html.append("<div class=\"sin-errores\">✨ No se encontraron errores léxicos en el archivo analizado.</div>\n");
+            html.append("<div class=\"sin-errores\"> No se encontraron errores léxicos en el archivo analizado.</div>\n");
         } else {
             html.append("<p>Total de errores encontrados: <span class=\"error-count\">").append(errores.size()).append("</span></p>\n");
             html.append("<div class=\"table-wrapper\">\n");

@@ -1,0 +1,35 @@
+@modelo "claude-sonnet-4-6"
+@rol "analista de riesgo"
+@formato "markdown"
+
+// archivo de prueba con errores lexicos intencionales
+
+AGENTE prueba_errores {
+	contexto = "Agente para probar recuperacion de errores"
+	variable a = 10
+	variable b = 5.
+	variable c = .5
+	variable d = 3.14.15
+	variable e = 10/2
+	variable f = a - b
+	variable g = 10 # 20
+	variable h = "cadena sin cerrar
+	variable i = 10 $ 20
+	variable j = a % b
+	variable k = a & b
+	variable l = a | b
+	variable m = "otra cadena" @ "pegada"
+	variable n = ¿que pasa aqui?
+	variable o = a~b
+	PREGUNTAR "algo"SOBRE a->res1
+	CLASIFICAR a EN alto,medio,bajo->res2
+	variable p = a^b
+	variable q = \escape\suelto
+}
+
+EJECUTAR prueba_errores
+EXPORTAR res1
+
+/* comentario de bloque que nunca se cierra
+   y debe seguir asi hasta el final del archivo
+   para probar que el analizador no se cuelga

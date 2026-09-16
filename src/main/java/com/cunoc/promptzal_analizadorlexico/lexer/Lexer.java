@@ -13,7 +13,6 @@ import java.util.List;
  *
  * @author jppax
  */
-//La clase mas importante 
 public class Lexer {
     private final String codigo;
     private int posicion;
