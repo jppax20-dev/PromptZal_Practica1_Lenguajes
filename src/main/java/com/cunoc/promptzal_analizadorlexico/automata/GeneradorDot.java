@@ -26,13 +26,22 @@ public class GeneradorDot {
         StringBuilder sb = new StringBuilder();
         sb.append("digraph AFD_PromptZal {\n");
         sb.append("    rankdir=LR;\n");
-        sb.append("    node [shape=circle, fontname=\"Helvetica\"];\n\n");
-
+        sb.append("    nodesep=0.8;\n"); 
+        sb.append("    ranksep=1.2;\n");
+        sb.append("    dpi=200;\n");
+        sb.append("    concentrate=true;\n");
+        
+        // lineas rectas sin curvas
+        sb.append("    splines=polyline;\n"); 
+        
+        sb.append("    node [shape=circle, fontname=\"Helvetica\", fontsize=12, style=filled, fillcolor=white, color=black];\n");
+        sb.append("    edge [fontname=\"Helvetica\", fontsize=11, fontcolor=blue, color=gray30];\n\n");
+        
         // Nodo invisible para marcar el estado inicial
-        sb.append("    inicio [shape=point];\n");
+        sb.append("    inicio [shape=point, width=0];\n");
         sb.append("    inicio -> ").append(tabla.getEstadoInicial()).append(";\n\n");
 
-        // Estados de aceptacion como doble circulo, con el token como etiqueta
+        // Estados de aceptacion
         for (String estado : tabla.getAceptacion().keySet()) {
             String token = tabla.getAceptacion().get(estado);
             sb.append("    ").append(estado)
@@ -40,16 +49,23 @@ public class GeneradorDot {
               .append("\\n").append(token).append("\"];\n");
         }
 
-        // Estado de error, resaltado aparte
+        // Estado de error 
         sb.append("    ").append(tabla.getEstadoError())
-          .append(" [shape=circle, style=filled, fillcolor=lightcoral];\n\n");
+          .append(" [shape=circle];\n\n");
 
         // Transiciones
         List<TablaTransiciones.Transicion> transiciones = tabla.getTransiciones();
         for (TablaTransiciones.Transicion t : transiciones) {
             sb.append("    ").append(t.origen)
               .append(" -> ").append(t.destino)
-              .append(" [label=\"").append(t.simbolo).append("\"];\n");
+              .append(" [label=\"   ").append(t.simbolo).append("   \""); 
+
+            // Las flechas de retorno a q0
+            if (t.simbolo.equals("fin token")) {
+                sb.append(", style=solid, color=gray50, fontcolor=gray50");
+            }
+
+            sb.append("];\n");
         }
 
         sb.append("}\n");
