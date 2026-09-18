@@ -1,0 +1,21 @@
+@modelo "claude-sonnet-4-6"
+@rol "asistente de investigacion"
+@formato "markdown"
+
+/* 
+   Prueba de codigo limpio sin errores lexicos.
+   Valida el comportamiento estandar del AFD y los estados de aceptacion.
+*/
+
+AGENTE asistente {
+    contexto = "Eres un analista de texto" + " experto"
+    variable archivo = CARGAR("info.txt")
+    
+    // Comandos de procesamiento secuencial
+    EXTRAER "fechas importantes" SOBRE archivo -> fechas
+    RESUMIR fechas EN 50 palabras -> resumen_fechas
+    TRADUCIR resumen_fechas EN "ingles" COMO "lista" -> resultado_final
+}
+
+EJECUTAR asistente
+EXPORTAR resultado_final

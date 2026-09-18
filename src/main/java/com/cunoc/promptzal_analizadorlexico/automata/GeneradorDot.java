@@ -28,7 +28,7 @@ public class GeneradorDot {
         sb.append("    rankdir=LR;\n");
         sb.append("    nodesep=0.8;\n"); 
         sb.append("    ranksep=1.2;\n");
-        sb.append("    dpi=200;\n");
+        sb.append("    dpi=300;\n");
         sb.append("    concentrate=true;\n");
         
         // lineas rectas sin curvas

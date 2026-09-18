@@ -142,13 +142,21 @@ public class VentanaPrincipal extends JFrame {
         pestañas.addTab("Errores", new JScrollPane(tablaErrores));
         pestañas.addTab("Estadisticas", new JScrollPane(tablaEstadisticas)); 
         
-        pestañas.setBackgroundAt(0, new java.awt.Color(144, 238, 144)); 
-        pestañas.setBackgroundAt(1, new java.awt.Color(255, 128, 128)); 
-        pestañas.setBackgroundAt(2, new java.awt.Color(216, 191, 216)); 
+        //botones inferiores 
+        JPanel panelTokens = new JPanel(new java.awt.BorderLayout());
+        panelTokens.setBackground(new java.awt.Color(144, 238, 144));
+        panelTokens.add(new javax.swing.JLabel("   Tokens   ", javax.swing.SwingConstants.CENTER));
+        pestañas.setTabComponentAt(0, panelTokens);
 
-        pestañas.setForegroundAt(0, java.awt.Color.BLACK);
-        pestañas.setForegroundAt(1, java.awt.Color.BLACK);
-        pestañas.setForegroundAt(2, java.awt.Color.BLACK);
+        JPanel panelErrores = new JPanel(new java.awt.BorderLayout());
+        panelErrores.setBackground(new java.awt.Color(255, 128, 128));
+        panelErrores.add(new javax.swing.JLabel("   Errores   ", javax.swing.SwingConstants.CENTER));
+        pestañas.setTabComponentAt(1, panelErrores);
+
+        JPanel panelEstadisticas = new JPanel(new java.awt.BorderLayout());
+        panelEstadisticas.setBackground(new java.awt.Color(216, 191, 216));
+        panelEstadisticas.add(new javax.swing.JLabel("   Estadisticas   ", javax.swing.SwingConstants.CENTER));
+        pestañas.setTabComponentAt(2, panelEstadisticas);
         
         // divisor dinamico
         scrollEditor.setMinimumSize(new java.awt.Dimension(400, 250)); 
@@ -159,8 +167,7 @@ public class VentanaPrincipal extends JFrame {
         divisor.setDividerLocation(380);     
         divisor.setResizeWeight(0.7);        
 
-        //  divisor completo al centro de la ventana
-        add(divisor, BorderLayout.CENTER);
+        add(divisor, java.awt.BorderLayout.CENTER);
     }
 
     private void analizarCodigo() {
@@ -394,9 +401,13 @@ public class VentanaPrincipal extends JFrame {
     }
     
     public static void main(String[] args) {
+        try {
+            javax.swing.UIManager.setLookAndFeel(javax.swing.UIManager.getSystemLookAndFeelClassName());
+        } catch (Exception e) {}
+
         SwingUtilities.invokeLater(() -> {
-            VentanaPrincipal ventana = new VentanaPrincipal();
-            ventana.setVisible(true);
+            VentanaBienvenida bienvenida = new VentanaBienvenida();
+            bienvenida.setVisible(true);
         });
     }
 }
