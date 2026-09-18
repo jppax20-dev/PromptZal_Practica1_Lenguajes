@@ -1,0 +1,29 @@
+@modelo "claude-sonnet-4-6"
+@rol "tester"
+@formato "markdown"
+
+// Comentario ignorado con simbolos raros !@#$%^&*()
+
+AGENTE caos {
+    contexto = "iniciando" + 0.99
+    variable datos = CARGAR("data.csv")
+    
+    #
+    ~
+    
+    PREGUNTAR "pregunta" SOBRE datos -> res1
+    
+    /* 
+       Comentario multilinea
+       saltos de linea
+       y simbolos $ % & que no deben dar error
+    */
+    
+    TRADUCIR res1 EN "ingles" -> res2
+    
+    \
+    ^
+    
+    EJECUTAR caos
+    EXPORTAR res2
+}

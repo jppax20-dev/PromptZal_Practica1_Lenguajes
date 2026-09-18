@@ -15,7 +15,7 @@ public class RenderizadorTablaTokens extends DefaultTableCellRenderer {
     public Component getTableCellRendererComponent(JTable table, Object value, 
             boolean isSelected, boolean hasFocus, int row, int column) {
         
-        // Java dibuje la celda original primero
+        // Java dibuja la celda original primero
         Component celda = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 
         if (isSelected) {
@@ -23,10 +23,8 @@ public class RenderizadorTablaTokens extends DefaultTableCellRenderer {
         }
 
         // Obtener el texto que está en la columna "Tipo" 
-        // Convertimos a String para poder compararlo
         String tipoToken = table.getModel().getValueAt(row, 2).toString();
 
-        // Elegir el color de fondo dependiendo del tipo exacto
         switch (tipoToken) {
             case "DIRECTIVA":
                 celda.setBackground(new Color(173, 216, 230)); 

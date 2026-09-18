@@ -42,6 +42,8 @@ public class VentanaPrincipal extends JFrame {
     private JButton botonSalir;
     private JButton botonGenerarReportes;
     private JButton botonVerAFD;
+    private JButton botonLimpiar;
+    private JScrollPane scrollEditor;
 
     private JTable tablaTokens;
     private JTable tablaErrores;
@@ -73,12 +75,9 @@ public class VentanaPrincipal extends JFrame {
     private void construirEditor() {
         areaEditor = new EditorConFondo("logo_promptzal.png");
         
-        JScrollPane scroll = new JScrollPane(areaEditor);
-        scroll.setPreferredSize(new java.awt.Dimension(900, 300));
-        
-        scroll.getViewport().setOpaque(false);
-        
-        add(scroll, BorderLayout.CENTER);
+        scrollEditor = new JScrollPane(areaEditor);
+        scrollEditor.setPreferredSize(new java.awt.Dimension(900, 300));
+        scrollEditor.getViewport().setOpaque(false);
     }
 
     private void construirBarraBotones() {
@@ -89,6 +88,7 @@ public class VentanaPrincipal extends JFrame {
         botonAnalizar = new JButton("Analizar");
         botonGenerarReportes = new JButton("Generar Reportes HTML");
         botonVerAFD = new JButton("Ver AFD");
+        botonLimpiar = new JButton("Limpiar");
         botonSalir = new JButton("Salir");
         
         int grosor = 2;
@@ -97,6 +97,7 @@ public class VentanaPrincipal extends JFrame {
         botonAnalizar.setBorder(BorderFactory.createLineBorder(Color.BLUE, grosor));
         botonGenerarReportes.setBorder(BorderFactory.createLineBorder(new Color(0, 153, 0), grosor));
         botonVerAFD.setBorder(BorderFactory.createLineBorder(Color.ORANGE, grosor));
+        botonLimpiar.setBorder(BorderFactory.createLineBorder(Color.GRAY, grosor));
         botonSalir.setBorder(BorderFactory.createLineBorder(Color.RED, grosor));
 
         botonAbrir.addActionListener(e -> abrirArchivo());
@@ -104,6 +105,7 @@ public class VentanaPrincipal extends JFrame {
         botonAnalizar.addActionListener(e -> analizarCodigo());
         botonGenerarReportes.addActionListener(e -> generarReportes());
         botonVerAFD.addActionListener(e -> verAFD());
+        botonLimpiar.addActionListener(e -> limpiarTodo());
         botonSalir.addActionListener(e -> confirmarSalida());
 
         panelBotones.add(botonAbrir);
@@ -111,6 +113,7 @@ public class VentanaPrincipal extends JFrame {
         panelBotones.add(botonAnalizar);
         panelBotones.add(botonGenerarReportes);
         panelBotones.add(botonVerAFD);
+        panelBotones.add(botonLimpiar);
         panelBotones.add(botonSalir);
 
         add(panelBotones, BorderLayout.NORTH);
@@ -121,17 +124,14 @@ public class VentanaPrincipal extends JFrame {
         new Object[]{"No.", "Lexema", "Tipo", "Fila", "Columna"}, 0
         );
         tablaTokens = new JTable(modeloTokens);
-        
         tablaTokens.setDefaultRenderer(Object.class, new RenderizadorTablaTokens());
 
         modeloErrores = new DefaultTableModel(
             new Object[]{"No.", "Lexema/Caracter", "Descripcion", "Fila", "Columna"}, 0
         );
         tablaErrores = new JTable(modeloErrores);
-        
         tablaErrores.setDefaultRenderer(Object.class, new RenderizadorTablaErrores());
 
-        // modelo para estadisticas (metrica y valor, mismo formato para totales y frecuencias)
         modeloEstadisticas = new DefaultTableModel(
             new Object[]{"Metrica", "Valor"}, 0
         );
@@ -150,8 +150,17 @@ public class VentanaPrincipal extends JFrame {
         pestañas.setForegroundAt(1, java.awt.Color.BLACK);
         pestañas.setForegroundAt(2, java.awt.Color.BLACK);
         
-        pestañas.setPreferredSize(new java.awt.Dimension(900, 300));
-        add(pestañas, BorderLayout.SOUTH);
+        // divisor dinamico
+        scrollEditor.setMinimumSize(new java.awt.Dimension(400, 250)); 
+        pestañas.setMinimumSize(new java.awt.Dimension(400, 150)); 
+
+        javax.swing.JSplitPane divisor = new javax.swing.JSplitPane(javax.swing.JSplitPane.VERTICAL_SPLIT, scrollEditor, pestañas);
+        divisor.setOneTouchExpandable(true); 
+        divisor.setDividerLocation(380);     
+        divisor.setResizeWeight(0.7);        
+
+        //  divisor completo al centro de la ventana
+        add(divisor, BorderLayout.CENTER);
     }
 
     private void analizarCodigo() {
@@ -216,6 +225,8 @@ public class VentanaPrincipal extends JFrame {
 
     private void abrirArchivo() {
         JFileChooser selector = new JFileChooser();
+        selector.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("Archivos PromptZal (*.pz)", "pz"));
+
         int resultado = selector.showOpenDialog(this);
 
         if (resultado == JFileChooser.APPROVE_OPTION) {
@@ -238,13 +249,14 @@ public class VentanaPrincipal extends JFrame {
                     "Aviso de documento vacío",
                     JOptionPane.YES_NO_OPTION,
                     JOptionPane.QUESTION_MESSAGE);
-            
+
             if (respuesta != JOptionPane.YES_OPTION) {
-                return; // cancelar guardado
+                return; 
             }
         }
-        
+
         JFileChooser selector = new JFileChooser();
+        selector.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("Archivos PromptZal (*.pz)", "pz"));
 
         if (rutaActual != null) {
             selector.setSelectedFile(new File(rutaActual));
@@ -254,6 +266,14 @@ public class VentanaPrincipal extends JFrame {
 
         if (resultado == JFileChooser.APPROVE_OPTION) {
             File archivo = selector.getSelectedFile();
+
+            // Si el usuario no escribio la extension .pz, se la agregamos automaticamente
+            String ruta = archivo.getAbsolutePath();
+            if (!ruta.toLowerCase().endsWith(".pz")) {
+                ruta = ruta + ".pz";
+                archivo = new File(ruta);
+            }
+
             boolean exito = EscritorArchivo.guardar(archivo.getAbsolutePath(), areaEditor.getText());
 
             if (exito) {
@@ -346,6 +366,31 @@ public class VentanaPrincipal extends JFrame {
         if (respuesta == JOptionPane.YES_OPTION) {
             System.exit(0);
         }
+    }
+    
+    private void limpiarTodo() {
+        // Ver si hay texto en el editor antes de lanzar la advertencia
+        if (!areaEditor.getText().isEmpty()) {
+            int respuesta = JOptionPane.showConfirmDialog(this,
+                    "¿Está seguro que desea limpiar todo?\nSe borrará el código del editor y los resultados del análisis.",
+                    "Confirmar Limpieza",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.WARNING_MESSAGE);
+
+            if (respuesta != JOptionPane.YES_OPTION) {
+                return; 
+            }
+        }
+
+        areaEditor.setText(""); 
+        
+        modeloTokens.setRowCount(0);
+        modeloErrores.setRowCount(0);
+        modeloEstadisticas.setRowCount(0);
+
+        ultimosTokens = null;
+        ultimosErrores = null;
+        totalLineas = 0;
     }
     
     public static void main(String[] args) {

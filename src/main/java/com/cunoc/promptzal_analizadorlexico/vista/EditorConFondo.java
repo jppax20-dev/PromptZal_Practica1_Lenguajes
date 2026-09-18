@@ -18,19 +18,23 @@ import javax.swing.JTextArea;
 public class EditorConFondo extends JTextArea {
     private Image imagenFondo;
 
-    public EditorConFondo(String rutaImagen) {
-        ImageIcon icono = new ImageIcon(rutaImagen);
-        if (icono.getIconWidth() > 0) {
+    public EditorConFondo(String nombreImagen) {
+        java.net.URL urlImagen = getClass().getResource("/" + nombreImagen);
+        
+        if (urlImagen != null) {
+            ImageIcon icono = new ImageIcon(urlImagen);
             this.imagenFondo = icono.getImage();
+        } else {
+            System.err.println("Error: No se encontró la imagen " + nombreImagen);
         }
 
+        // Configuraciones viausles 
         setOpaque(false);
-
-        setForeground(Color.BLACK); 
+        setForeground(Color.BLACK);
         setFont(new java.awt.Font("Monospaced", java.awt.Font.BOLD, 16)); 
         setCaretColor(Color.BLACK);
     }
-
+    
     @Override
     protected void paintComponent(Graphics g) {
         Graphics2D g2d = (Graphics2D) g.create();
@@ -38,7 +42,7 @@ public class EditorConFondo extends JTextArea {
         g2d.setColor(Color.WHITE);
         g2d.fillRect(0, 0, getWidth(), getHeight());
 
-        // Dibujar la marca de agua ajustada y centrada
+        // imagen ajustada y centrada
         if (imagenFondo != null) {
             g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.08f));
 
@@ -49,10 +53,9 @@ public class EditorConFondo extends JTextArea {
             int anchoImagen = imagenFondo.getWidth(null);
             int altoImagen = imagenFondo.getHeight(null);
 
-            // Calcular la escala para que ocupe el 70% del espacio 
             double escalaX = (double) areaVisible.width * 0.7 / anchoImagen;
             double escalaY = (double) areaVisible.height * 0.7 / altoImagen;
-            double escala = Math.min(escalaX, escalaY); //  evita que se estire
+            double escala = Math.min(escalaX, escalaY);
 
             int nuevoAncho = (int) (anchoImagen * escala);
             int nuevoAlto = (int) (altoImagen * escala);
